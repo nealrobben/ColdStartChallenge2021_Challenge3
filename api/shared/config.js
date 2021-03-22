@@ -11,7 +11,7 @@ const sqlConfig = {
   user: process.env.SQL_USERNAME,
   password: process.env.SQL_PASSWORD,
   server: process.env.SQL_SERVERNAME,
-  database: 'coldstartsql',
+  database: 'ColdStartChallenge',
   pool: {
     max: 10,
     min: 0,
