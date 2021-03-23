@@ -1,5 +1,6 @@
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace ColdStartChallengeFunctions
 {
@@ -11,29 +12,43 @@ namespace ColdStartChallengeFunctions
         {
             log.LogInformation($"C# Queue trigger function processed: {myQueueItem}");
 
+            var sourceItem = JsonConvert.DeserializeObject<SourceItem>(myQueueItem);
+
             document = new
             {
                 id = "",
-                user = "test",
-                date = "test",
+                user = sourceItem?.User,
+                date = sourceItem?.Date,
                 icecream = new
                 {
-                    icecreamId = "",
+                    icecreamId = sourceItem?.IcecreamId,
                     name = "",
                     description = "",
                     imageUrl = ""
                 },
-                status = "",
+                status = "Accepted",
                 driver = new
                 {
-                    driverId = "null",
-                    name = "null",
-                    imageUrl = "null"
+                    driverId = sourceItem?.DriverId,
+                    name = "",
+                    imageUrl = ""
                 },
-                fullAddress = "",
+                fullAddress = sourceItem?.FullAddress,
                 deliveryPosition = "",
-                lastPosition = ""
+                lastPosition = sourceItem?.LastPosition
             };
+        }
+
+        public class SourceItem
+        {
+            public string Id { get; set; }
+            public string User { get; set; }
+            public string Date { get; set; }
+            public string IcecreamId { get; set; }
+            public string Status { get; set; }
+            public string DriverId { get; set; }
+            public string FullAddress { get; set; }
+            public string LastPosition { get; set; }
         }
     }
 }
