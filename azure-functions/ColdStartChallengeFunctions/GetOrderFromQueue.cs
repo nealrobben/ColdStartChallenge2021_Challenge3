@@ -62,9 +62,9 @@ namespace ColdStartChallengeFunctions
                         return new IceCream
                         {
                             IcecreamId = icecreamId,
-                            Name = (string)reader["Name"],
-                            Description = (string)reader["Description"],
-                            ImageUrl = (string)reader["ImageUrl"]
+                            Name = (string)reader[1],
+                            Description = (string)reader[2],
+                            ImageUrl = (string)reader[3]
                         };
                     }
                     finally
