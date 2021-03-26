@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Azure.Cosmos;
-using Microsoft.Azure.Documents.Client;
+using Microsoft.Azure.Cosmos.Spatial;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
+using BingMapsRESTToolkit;
+using Point = Microsoft.Azure.Cosmos.Spatial.Point;
 
 namespace ColdStartChallengeFunctions
 {
@@ -44,9 +45,38 @@ namespace ColdStartChallengeFunctions
                 foreach(var order in acceptedOrders)
                 {
                     order.status = "Ready";
+                    order.deliveryPosition = GetLocation(order.fullAddress).ToString();
+
                     container.ReplaceItemAsync(order,order.id);
                 }
             }
+        }
+
+        private static Point GetLocation(string address)
+        {
+            var request = new GeocodeRequest()
+            {
+                Query = address,
+                IncludeIso2 = true,
+                IncludeNeighborhood = true,
+                MaxResults = 5,
+                BingMapsKey = Environment.GetEnvironmentVariable("BingMapsKey")
+            };
+
+            var response = request.Execute().Result;
+
+            if (response != null &&
+                response.ResourceSets != null &&
+                response.ResourceSets.Length > 0 &&
+                response.ResourceSets[0].Resources != null &&
+                response.ResourceSets[0].Resources.Length > 0)
+            {
+                var result = response.ResourceSets[0].Resources[0] as Location;
+
+                return new Point(result.Point.Coordinates[0], result.Point.Coordinates[1]);
+            }
+
+            return new Point(0,0);
         }
     }
 
