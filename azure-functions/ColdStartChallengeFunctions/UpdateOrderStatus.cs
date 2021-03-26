@@ -45,7 +45,8 @@ namespace ColdStartChallengeFunctions
                 foreach(var order in acceptedOrders)
                 {
                     order.status = "Ready";
-                    order.deliveryPosition = GetLocation(order.fullAddress).ToString();
+                    var position = GetLocation(order.fullAddress).Position;
+                    order.deliveryPosition = $"{position.Latitude}, {position.Longitude}";
 
                     container.ReplaceItemAsync(order,order.id);
                 }
